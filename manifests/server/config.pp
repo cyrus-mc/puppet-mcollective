@@ -4,7 +4,7 @@
 #
 # Requires: concat
 #
-class mcollective::server::config ( 
+class mcollective::server::config (
   $server,
   $user,
   $password,
@@ -18,7 +18,7 @@ class mcollective::server::config (
 
   # server.cfg configuration fragment
   concat::fragment { 'server-cfg':
-    target => "${mcollective::params::config_path}/server.cfg",
+    target  => "${mcollective::params::config_path}/server.cfg",
     content => template('mcollective/server.cfg.erb'),
     order   => '01',
   }
@@ -44,5 +44,15 @@ class mcollective::server::config (
     recurse => 'remote',
     source  => 'puppet:///modules/mcollective/clients';
   }
+
+  # file resource for facts.yaml
+  file {
+    "${mcollective::params::config_path}/facts.yaml":
+    mode     => '0400',
+    loglevel => debug,   # this is needed to avoid it being logged and reported every run
+    backup   => false,
+    content  => template('mcollective/facts.yaml.erb');
+  }
+
 
 }
