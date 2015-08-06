@@ -1,0 +1,4 @@
+<% if scope.lookupvar("::operatingsystemmajrelease") == "4" -%>
+# Red Hat 4 requires explicit path to puppet as installation is not in PATH
+plugin.puppet.command = /opt/puppet/bin/puppet agent
+<% end -%>
