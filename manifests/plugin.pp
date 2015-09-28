@@ -1,66 +1,58 @@
 # == Define: mcollective::plugin
 #
-#	Resource to install a mcollective plugin
+# This define manages a mcollective plugin, addon
 #
-# == Parameters
+# Requires: concat
 #
-#       [namevar]
-#               The name of the resources. 
-#
-#	[type]
-#		string, the type of plugin. Valid values are application, 
-#		agent, registration
-#
-#	[ensure]
-#		boolean, whether to ensure plugin is present or not
-#
-#	[ddl]
-#		boolean, does a DDL accompany this plugin
-#
-#	[application]
-#		boolean, does an application accompany this plugin
-#
-#	[plugin_base]
-#		string, directory where plugins get installed
-#
-# == Examples
-#
-#
-# == Authors
-#       Author Name <matthew.ceroni@monitise.com>
-#
-# [Remember: no empty lines between comments and class definition]
-define mcollective::plugin ( $type, $ensure = present ) {
+define mcollective::plugin (
+  $ensure,
+  $type
+  ) {
 
   include ::mcollective::params
 
-  if $mcollective::params::supported {
-
-    # default provider of up2date for RH4 doesn't work, override to use yum else
-    # fall back to automatic detection
-    $pkg_provider = $::operatingsystemmajrelease ? {
-        '4'     => 'yum',
-        default => undef
+  if $type == 'client' {
+    # client plugins require the node to be configured as a client (this test should ensure
+    # that mcollective::client is in catalog
+    if ! defined(Class['mcollective::client']) {
+      fail("You must declare mcollective::client class before you can use mcollective::plugin with type \'${type}\'")
     }
 
-    package { "mcollective-${name}-${type}":
-      ensure  => $ensure,
-      provider => $pkg_provider,
-      notify  => Service[ $mcollective::params::service ];
+    # allow for possiblity that plugin has plugin specific config
+    concat::fragment { "client_cfg-${name}":
+      target  => "${mcollective::params::config_path}/client.cfg",
+      content => template("mcollective/${name}-client.cfg.erb"),
+    }
+  } else {
+    # if type is not client, it is server side configuration (assumption) (this test should ensure
+    # that mcollective::server is in catalog
+    if ! defined(Class['mcollective::server']) {
+      fail("You must declare mcollective::server class before you can use mcollective::plugin with type \'${type}\'")
     }
 
-    $template = $type ? {
-      'agent'  => "${name}-server.cfg.erb",
-      'client' => "${name}-client.cfg.erb",
-      default  => undef,
+    # allow for possibility that plugin has plugin specific config
+    concat::fragment { "server_cfg-${name}":
+      target => "${mcollective::params::config_path}/server.cfg",
+      content => template("mcollective/${name}-server.cfg.erb"),
+      notify  => Service[ $mcollective::params::service_name ];
     }
+  }
 
-    # concat plugin specific configuration file
-    concat::fragment { "server_cfg-${name}-${type}":
-      target => "${mcollective::params::c_path}/server.cfg",
-      content => template("mcollective/${template}"),
-      notify  => Service[ $mcollective::params::service ]
-    }
+  $_plugin_package = $type ? {
+    'agent'  => "mcollective-${name}-${type}",
+    'client' => "mcollective-${name}-${type}",
+    default  => "mcollective-${name}",
+  }
+
+  $_service_notify = $type ? {
+    'client' => undef,
+    default  => Service[ $mcollective::params::service_name ],
+  }
+
+  # install necessary plugin package
+  package { $_plugin_package:
+    ensure => $ensure,
+    notify => $_service_notify,
   }
 
 }

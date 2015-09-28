@@ -12,8 +12,6 @@ class mcollective::server (
   $user,
   $password,
   $rpcauth_provider,
-  $rpcauth_allow_unconfigured,
-  $rpcauth_enable_default
   ) inherits mcollective::params {
 
   # call sub classes
@@ -27,12 +25,10 @@ class mcollective::server (
     enable    => $service_enable;
 
     'mcollective::server::config':
-    server                     => $server,
-    user                       => $user,
-    password                   => $password,
-    rpcauth_provider           => $rpcauth_provider,
-    rpcauth_allow_unconfigured => $rpcauth_allow_unconfigured,
-    rpcauth_enable_default     => $rpcauth_enable_default,
+    server           => $server,
+    user             => $user,
+    password         => $password,
+    rpcauth_provider => $rpcauth_provider,
 
   }
 
