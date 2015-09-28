@@ -48,9 +48,14 @@ plugin.rpcaudit.logfile = /var/log/mcollective-audit.log
 # commands, although `mco ping` will work. You should deploy the
 # ActionPolicy plugin before uncommenting this; see "Deploy Plugins" below.
 
-# rpcauthorization = 1
-# rpcauthprovider = action_policy
-# plugin.actionpolicy.allow_unconfigured = 1
+<% if @rpcauth_provider -%>
+rpcauthorization = 1
+rpcauthprovider = <%= @rpcauth_provider %>
+<% if @rpcauth_provider == 'action_policy' %>
+plugin.actionpolicy.allow_unconfigured = <%= @rpcauth_allow_unconfigured %>
+plugin.actionpolicy.enable_default = <%= @rpcauth_enable_default %>
+<%- end -%>
+<%- end -%>
 
 # Logging:
 logger_type = file
