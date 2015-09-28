@@ -8,6 +8,9 @@ class mcollective::server::config (
   $server,
   $user,
   $password,
+  $rpcauth_provider,
+  $rpcauth_allow_unconfigured,
+  $rpcauth_enable_default,
   ) inherits mcollective::params{
 
 
@@ -41,8 +44,12 @@ class mcollective::server::config (
     source  => 'puppet:///modules/mcollective/server_private.pem';
 
     "${mcollective::params::config_path}/ssl/clients":
-    recurse => 'remote',
+    recurse => true,
+    purge   => true,
     source  => 'puppet:///modules/mcollective/clients';
+
+    "${mcollective::params::config_path}/policies":
+    ensure => 'directory';
   }
 
   # file resource for facts.yaml
