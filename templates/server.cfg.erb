@@ -51,10 +51,6 @@ plugin.rpcaudit.logfile = /var/log/mcollective-audit.log
 <% if @rpcauth_provider -%>
 rpcauthorization = 1
 rpcauthprovider = <%= @rpcauth_provider %>
-<% if @rpcauth_provider == 'action_policy' %>
-plugin.actionpolicy.allow_unconfigured = <%= @rpcauth_allow_unconfigured %>
-plugin.actionpolicy.enable_default = <%= @rpcauth_enable_default %>
-<%- end -%>
 <%- end -%>
 
 # Logging:
@@ -72,3 +68,4 @@ logfacility = user
 # for the differences.
 libdir = <%= @mc_libdir %> 
 daemonize = 1
+

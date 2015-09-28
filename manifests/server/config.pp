@@ -9,8 +9,6 @@ class mcollective::server::config (
   $user,
   $password,
   $rpcauth_provider,
-  $rpcauth_allow_unconfigured,
-  $rpcauth_enable_default,
   ) inherits mcollective::params{
 
 
