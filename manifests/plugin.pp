@@ -6,7 +6,8 @@
 #
 define mcollective::plugin (
   $ensure,
-  $type
+  $type,
+  $package = true
   ) {
 
   include ::mcollective::params
@@ -49,10 +50,22 @@ define mcollective::plugin (
     default  => Service[ $mcollective::params::service_name ],
   }
 
-  # install necessary plugin package
-  package { $_plugin_package:
-    ensure => $ensure,
-    notify => $_service_notify,
+  if $package {
+    # install necessary plugin package
+    package { $_plugin_package:
+      ensure => $ensure,
+      notify => $_service_notify,
+    }
+  } else {
+    file {
+      "/usr/libexec/mcollective/mcollective/${type}/${name}.rb":
+      source => "puppet:///modules/mcollective/plugins/${type}/${name}.rb",
+      notify => $_service_notify;
+
+      "/usr/libexec/mcollective/mcollective/${type}/${name}.ddl":
+      source => "puppet:///modules/mcollective/plugins/${type}/${name}.ddl",
+      notify => $_service_notify;
+    }
   }
 
 }
