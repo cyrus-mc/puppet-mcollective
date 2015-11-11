@@ -7,6 +7,13 @@ module MCollective
 
                                 reply[:status] = run(runcmd, :stdout => :out, :stderr => :err)
                         end
+
+
+                        action "refresh" do
+                                runcmd = "subscription-manager refresh"
+
+                                reply[:status] = run(runcmd, :stdout => :out, :stderr => :err)
+                        end
                 end
         end
 end
