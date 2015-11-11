@@ -21,3 +21,12 @@ action "attach", :description => "Attach subscription" do
                 :description    => "subscription-manager attach status/result",
                 :display_as     => "Status/Result"
 end
+
+
+action "refresh", :description => "Pull latest entitlement data from the server" do
+        display :always
+
+        output :status,
+                :description    => "subscription manager refresh status/result",
+                :display_as     => "Status/Result"
+end
