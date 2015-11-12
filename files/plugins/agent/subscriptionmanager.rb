@@ -1,6 +1,11 @@
 module MCollective
         module Agent
                 class Subscriptionmanager<RPC::Agent
+
+			activate_when do
+				File.executable?("/usr/bin/subscription-manager")
+			end
+
                         action "attach" do
 
                                 runcmd = "subscription-manager attach --pool=#{request[:pool]}"
