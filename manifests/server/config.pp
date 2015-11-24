@@ -14,7 +14,7 @@ class mcollective::server::config (
 
   concat { "${mcollective::params::config_path}/server.cfg":
     ensure => 'present',
-    notify => Service [ 'mcollective-server' ];
+    notify => Service[ 'mcollective-server' ];
   }
 
   # server.cfg configuration fragment
@@ -28,8 +28,8 @@ class mcollective::server::config (
     owner   => 'root',
     group   => 'root',
     mode    => '0640',
-    require => Package [ $mcollective::params::package_server ],
-    notify  => Service [ 'mcollective-server' ],
+    require => Package[ $mcollective::params::package_server ],
+    notify  => Service[ 'mcollective-server' ],
   }
 
   # push out server SSL certificates and all client SSL certificates
